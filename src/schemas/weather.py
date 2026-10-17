@@ -7,7 +7,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
-
 # ---------------------------------------------------------------------------
 # Request schemas
 # ---------------------------------------------------------------------------
@@ -39,7 +38,7 @@ class WeatherSearchRequest(BaseModel):
     end_date: date = Field(..., description="End date (YYYY-MM-DD, inclusive).")
 
     @model_validator(mode="after")
-    def check_location_or_coords(self) -> "WeatherSearchRequest":
+    def check_location_or_coords(self) -> WeatherSearchRequest:
         has_location = bool(self.location)
         has_coords = self.latitude is not None and self.longitude is not None
 
@@ -62,7 +61,7 @@ class WeatherUpdateRequest(BaseModel):
     end_date: date | None = None
 
     @model_validator(mode="after")
-    def check_at_least_one_field(self) -> "WeatherUpdateRequest":
+    def check_at_least_one_field(self) -> WeatherUpdateRequest:
         if all(
             v is None
             for v in [

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from typing import Any
 
 from sqlalchemy import func, select
@@ -154,7 +154,7 @@ class WeatherStore:
         if weather_data is not None:
             record.weather_data = weather_data
 
-        record.updated_at = datetime.now(timezone.utc)
+        record.updated_at = datetime.now(UTC)
         await self._session.flush()
         await self._session.refresh(record)
         logger.info("Updated WeatherRecord id=%d", record_id)

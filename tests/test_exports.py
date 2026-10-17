@@ -4,12 +4,6 @@ from __future__ import annotations
 
 import csv
 import io
-import json
-from unittest.mock import AsyncMock, patch
-
-import pytest
-
-from tests.conftest import MOCK_GEO_RESULT, MOCK_WEATHER_DATA
 
 
 async def _seed_record(client, mock_geocode, mock_weather_range) -> dict:

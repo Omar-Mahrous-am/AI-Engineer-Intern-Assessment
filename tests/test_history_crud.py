@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
-import pytest
-
 from tests.conftest import MOCK_GEO_RESULT, MOCK_WEATHER_DATA
 
 

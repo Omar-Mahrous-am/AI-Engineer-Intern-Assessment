@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
-from sqlalchemy import DateTime, Float, Index, Integer, JSON, String
+from sqlalchemy import JSON, DateTime, Float, Index, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.helpers.database import Base
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 class WeatherRecord(Base):
@@ -19,10 +19,10 @@ class WeatherRecord(Base):
 
     __tablename__ = "weather_records"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     location_name: Mapped[str] = mapped_column(
-        String(255), nullable=False, index=True, comment="Resolved location name"
+        String(255), nullable=False, comment="Resolved location name"
     )
     country: Mapped[str | None] = mapped_column(
         String(100), nullable=True, comment="Country of the resolved location"

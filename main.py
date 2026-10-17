@@ -7,12 +7,13 @@ Run with:
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 
 from src.helpers.config import get_settings
 from src.helpers.database import check_db_connectivity
@@ -140,3 +141,35 @@ async def readiness() -> JSONResponse:
     return JSONResponse(
         content={"status": "ready", "database": "ok", "service": settings.app_name}
     )
+
+
+# ---------------------------------------------------------------------------
+# Simple Frontend Layer
+# ---------------------------------------------------------------------------
+FRONTEND_DIR = Path(__file__).resolve().parent / "frontend"
+
+
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+async def serve_index() -> HTMLResponse:
+    index_file = FRONTEND_DIR / "index.html"
+    if index_file.exists():
+        return HTMLResponse(content=index_file.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Weather Backend</h1><p>Frontend file not found.</p>")
+
+
+@app.get("/style.css", include_in_schema=False)
+async def serve_css() -> Response:
+    css_file = FRONTEND_DIR / "style.css"
+    if css_file.exists():
+        return Response(content=css_file.read_text(encoding="utf-8"), media_type="text/css")
+    return Response(status_code=404)
+
+
+@app.get("/app.js", include_in_schema=False)
+async def serve_js() -> Response:
+    js_file = FRONTEND_DIR / "app.js"
+    if js_file.exists():
+        return Response(
+            content=js_file.read_text(encoding="utf-8"), media_type="application/javascript"
+        )
+    return Response(status_code=404)

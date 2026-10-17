@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
-from tests.conftest import MOCK_GEO_RESULT, MOCK_WEATHER_DATA
-
 
 class TestDatabasePersistence:
     """Verify weather data is actually stored and retrievable."""

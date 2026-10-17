@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import HTTPException, status
+from fastapi import status
 
 
 class AppError(Exception):

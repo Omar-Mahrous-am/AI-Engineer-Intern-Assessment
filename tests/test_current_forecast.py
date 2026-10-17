@@ -2,10 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
-from tests.conftest import MOCK_CURRENT_DATA, MOCK_GEO_RESULT, MOCK_WEATHER_DATA
-
 
 class TestCurrentWeather:
     """GET /api/v1/weather/current"""

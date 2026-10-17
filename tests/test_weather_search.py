@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
 from unittest.mock import AsyncMock, patch
 
-import httpx
 import pytest
-
-from tests.conftest import MOCK_GEO_RESULT, MOCK_WEATHER_DATA
 
 
 class TestWeatherSearch:

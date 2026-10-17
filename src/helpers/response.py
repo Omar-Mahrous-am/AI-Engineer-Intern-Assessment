@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi.responses import JSONResponse
-
 
 def success_response(data: Any, *, status_code: int = 200) -> dict[str, Any]:
     """Wrap data in a standard success envelope."""

@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-import asyncio
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-
 from sqlalchemy.pool import StaticPool
 
 import src.models  # noqa: F401 - register models on Base.metadata

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Application | FastAPI & Open-Meteo</title>
+  <meta name="description" content="A clean weather dashboard connected to FastAPI and Open-Meteo backend with persistence and data export.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-area">
+        <div class="logo-icon">⛅</div>
+        <div class="logo-text">
+          <h1>Weather Backend</h1>
+          <span>FastAPI • MVC • Open-Meteo</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="http://127.0.0.1:8000/docs" target="_blank" class="nav-link" id="swaggerLink">Swagger UI</a>
+        <a href="http://127.0.0.1:8000/redoc" target="_blank" class="nav-link" id="redocLink">ReDoc</a>
+        <a href="http://127.0.0.1:8000/health" target="_blank" class="nav-link" id="healthLink">Health</a>
+      </nav>
+    </header>
+
+    <!-- Search Section -->
+    <main>
+      <section class="glass-card">
+        <div class="search-tabs">
+          <button type="button" class="tab-btn active" data-tab="city">Search by City</button>
+          <button type="button" class="tab-btn" data-tab="coords">Search by Coordinates</button>
+        </div>
+
+        <form id="searchForm">
+          <div class="input-row" style="margin-bottom: 1rem;">
+            <!-- City Input -->
+            <div class="input-group" id="cityInputGroup" style="flex: 2; min-width: 220px;">
+              <label for="locationInput">City / Location</label>
+              <input type="text" id="locationInput" placeholder="e.g. Mansoura, Cairo, London, Tokyo" value="Mansoura">
+            </div>
+
+            <!-- Coordinates Input -->
+            <div class="input-row hidden" id="coordsInputGroup" style="flex: 2; min-width: 220px;">
+              <div class="input-group" style="flex: 1;">
+                <label for="latInput">Latitude</label>
+                <input type="number" step="any" id="latInput" placeholder="31.0364">
+              </div>
+              <div class="input-group" style="flex: 1;">
+                <label for="lonInput">Longitude</label>
+                <input type="number" step="any" id="lonInput" placeholder="31.3807">
+              </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="input-group" style="flex: 1; min-width: 170px;">
+              <label for="modeSelect">Query Mode</label>
+              <select id="modeSelect">
+                <option value="current">Current Weather</option>
+                <option value="forecast">Forecast</option>
+                <option value="search_range">Search & Save (DB)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Mode Options -->
+          <div class="input-row" style="margin-bottom: 1.25rem;">
+            <!-- Forecast Days -->
+            <div class="input-group hidden" id="forecastDaysGroup" style="max-width: 180px;">
+              <label for="daysInput">Forecast Days (1-16)</label>
+              <input type="number" id="daysInput" min="1" max="16" value="5">
+            </div>
+
+            <!-- Date Range for Search & Save -->
+            <div class="input-row hidden" id="dateRangeGroup" style="flex: 1;">
+              <div class="input-group" style="flex: 1;">
+                <label for="startDateInput">Start Date</label>
+                <input type="date" id="startDateInput">
+              </div>
+              <div class="input-group" style="flex: 1;">
+                <label for="endDateInput">End Date</label>
+                <input type="date" id="endDateInput">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="searchBtn">
+            <span>Search Weather</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Active Weather Display -->
+      <section id="weatherResult" class="glass-card hidden">
+        <!-- Rendered dynamically via app.js -->
+      </section>
+
+      <!-- Search History & Export -->
+      <section class="glass-card">
+        <div class="section-header">
+          <div class="section-title">Saved Search History</div>
+          <div class="export-btns">
+            <button type="button" class="btn-secondary" id="refreshHistoryBtn">↻ Refresh</button>
+            <button type="button" class="btn-secondary" id="exportCsvBtn">📥 Export CSV</button>
+            <button type="button" class="btn-secondary" id="exportJsonBtn">📥 Export JSON</button>
+          </div>
+        </div>
+
+        <div id="historyList" class="history-list">
+          <p style="color: var(--text-dim); font-size: 0.9rem;">Loading history...</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      Weather Application • PM Accelerator Assessment • Built with FastAPI & Modern CSS
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

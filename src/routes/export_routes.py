@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response

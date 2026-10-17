@@ -5,9 +5,8 @@ from __future__ import annotations
 import csv
 import io
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
-
 
 # Characters that trigger formula injection in spreadsheet apps
 _FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
@@ -78,7 +77,7 @@ def records_to_csv(records: list[dict[str, Any]]) -> bytes:
 
 def safe_export_filename(prefix: str, fmt: str) -> str:
     """Build a safe, timestamped export filename."""
-    timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     # Strip any path separators from the prefix for safety
     safe_prefix = prefix.replace("/", "_").replace("\\", "_")
     return f"{safe_prefix}_{timestamp}.{fmt}"
