@@ -28,7 +28,16 @@ const WMO_EMOJIS = {
 };
 
 function getWeatherMeta(code, defaultDesc = "") {
-  return WMO_EMOJIS[code] || { icon: "🌤️", text: defaultDesc || "Partly Cloudy" };
+  return WMO_EMOJIS[code] || { icon: "🌤️", text: defaultDesc || "Unknown" };
+}
+
+// Format helper to safely display numeric weather values or fallback to "N/A"
+function fmt(value, suffix = "", round = false) {
+  if (value === null || value === undefined || value === "") return "N/A";
+  const num = Number(value);
+  if (Number.isNaN(num)) return "N/A";
+  const val = round ? Math.round(num) : num;
+  return `${val}${suffix}`;
 }
 
 // DOM Elements
@@ -48,7 +57,7 @@ const toast = document.getElementById("toast");
 // Set default dates
 const today = new Date();
 const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate() + 2);
+tomorrow.setDate(today.getDate() + 1);
 startDateInput.value = today.toISOString().split("T")[0];
 endDateInput.value = tomorrow.toISOString().split("T")[0];
 
@@ -172,7 +181,12 @@ searchForm.addEventListener("submit", async (e) => {
 
 // Renderers
 function renderCurrentWeather(data) {
+  data = { ...data, ...(data.weather || {}), latitude: data.latitude, longitude: data.longitude };
   const meta = getWeatherMeta(data.weather_code, data.weather_description);
+  const coordsText = (data.latitude != null && data.longitude != null && !isNaN(data.latitude) && !isNaN(data.longitude))
+    ? `${Number(data.latitude).toFixed(4)}°, ${Number(data.longitude).toFixed(4)}° • ${data.timezone || "UTC"}`
+    : (data.timezone || "UTC");
+
   weatherResult.innerHTML = `
     <div class="weather-hero">
       <div>
@@ -180,12 +194,12 @@ function renderCurrentWeather(data) {
           <h2>${data.location_name || "Coordinates"}</h2>
           ${data.country ? `<span class="country-badge">${data.country}</span>` : ""}
         </div>
-        <div class="coords-sub">${data.latitude?.toFixed(4)}°, ${data.longitude?.toFixed(4)}° • ${data.timezone || "UTC"}</div>
+        <div class="coords-sub">${coordsText}</div>
       </div>
       <div class="temp-large">
         <span class="weather-icon">${meta.icon}</span>
         <div>
-          <div class="temperature-val">${Math.round(data.temperature)}${data.temperature_unit || "°C"}</div>
+          <div class="temperature-val">${fmt(data.temperature, data.temperature_unit || "°C", true)}</div>
           <div class="condition-text">${meta.text}</div>
         </div>
       </div>
@@ -193,19 +207,19 @@ function renderCurrentWeather(data) {
     <div class="metrics-grid">
       <div class="metric-item">
         <span class="metric-label">Feels Like</span>
-        <span class="metric-value">${data.apparent_temperature ? Math.round(data.apparent_temperature) + "°C" : "N/A"}</span>
+        <span class="metric-value">${fmt(data.apparent_temperature, data.temperature_unit || "°C", true)}</span>
       </div>
       <div class="metric-item">
         <span class="metric-label">Humidity</span>
-        <span class="metric-value">${data.relative_humidity ? data.relative_humidity + "%" : "N/A"}</span>
+        <span class="metric-value">${fmt(data.relative_humidity, "%")}</span>
       </div>
       <div class="metric-item">
         <span class="metric-label">Wind</span>
-        <span class="metric-value">${data.wind_speed} ${data.wind_speed_unit || "km/h"}</span>
+        <span class="metric-value">${fmt(data.wind_speed, ` ${data.wind_speed_unit || "km/h"}`)}</span>
       </div>
       <div class="metric-item">
         <span class="metric-label">Precipitation</span>
-        <span class="metric-value">${data.precipitation} mm</span>
+        <span class="metric-value">${fmt(data.precipitation, " mm")}</span>
       </div>
     </div>
   `;
@@ -213,17 +227,23 @@ function renderCurrentWeather(data) {
 }
 
 function renderForecastWeather(data) {
-  const days = data.days || [];
+  data = { ...data, days: data.days || data.forecast?.days || data.forecast || [] };
+  const days = Array.isArray(data.days) ? data.days : [];
   const firstDay = days[0] || {};
   const meta = getWeatherMeta(firstDay.weather_code, firstDay.weather_description);
+  const coordsText = (data.latitude != null && data.longitude != null && !isNaN(data.latitude) && !isNaN(data.longitude))
+    ? `${Number(data.latitude).toFixed(4)}°, ${Number(data.longitude).toFixed(4)}° • ${days.length} Days`
+    : `${days.length} Days`;
 
   let daysHtml = days.map(d => {
     const dMeta = getWeatherMeta(d.weather_code, d.weather_description);
+    const maxStr = fmt(d.temperature_max, "°", true);
+    const minStr = fmt(d.temperature_min, "°", true);
     return `
       <div class="forecast-card">
-        <div class="forecast-date">${d.date}</div>
+        <div class="forecast-date">${d.date || "N/A"}</div>
         <div class="forecast-icon">${dMeta.icon}</div>
-        <div class="forecast-temp">${Math.round(d.temperature_max)}° / ${Math.round(d.temperature_min)}°</div>
+        <div class="forecast-temp">${maxStr} / ${minStr}</div>
         <div class="forecast-condition">${dMeta.text}</div>
       </div>
     `;
@@ -236,12 +256,12 @@ function renderForecastWeather(data) {
           <h2>${data.location_name || "Forecast Area"}</h2>
           ${data.country ? `<span class="country-badge">${data.country}</span>` : ""}
         </div>
-        <div class="coords-sub">${data.latitude?.toFixed(4)}°, ${data.longitude?.toFixed(4)}° • ${days.length} Days</div>
+        <div class="coords-sub">${coordsText}</div>
       </div>
       <div class="temp-large">
         <span class="weather-icon">${meta.icon}</span>
         <div>
-          <div class="temperature-val">${Math.round(firstDay.temperature_max || 0)}°C</div>
+          <div class="temperature-val">${fmt(firstDay.temperature_max, "°C", true)}</div>
           <div class="condition-text">${meta.text}</div>
         </div>
       </div>

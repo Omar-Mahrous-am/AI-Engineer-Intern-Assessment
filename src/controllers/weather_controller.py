@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.helpers import weather_client
 from src.helpers.exceptions import InvalidCoordinatesError, InvalidDateRangeError
 from src.helpers.logging import get_logger
+from src.helpers.weather_normalizer import normalize_current, normalize_forecast
 from src.models.weather_record import WeatherRecord
 from src.schemas.weather import WeatherSearchRequest, WeatherUpdateRequest
 from src.stores.weather_store import WeatherStore
@@ -107,7 +108,8 @@ class WeatherController:
             "country": country,
             "latitude": lat,
             "longitude": lon,
-            "weather": weather,
+            **normalize_current(weather),  # flat fields for the UI
+            "weather": weather,  # original payload kept for compatibility
         }
 
     # ------------------------------------------------------------------
@@ -146,7 +148,8 @@ class WeatherController:
             "latitude": lat,
             "longitude": lon,
             "days_requested": days,
-            "forecast": forecast,
+            "days": normalize_forecast(forecast),  # list the UI reads
+            "forecast": forecast,  # original payload kept for compatibility
         }
 
     # ------------------------------------------------------------------
